@@ -38,7 +38,6 @@ class MySuccessChecker implements CheckerInterface
     {
         return new CheckerResult(true, 'my success message');
     }
-    
 }
 
 class MyFailureChecker implements CheckerInterface
