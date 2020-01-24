@@ -31,11 +31,11 @@ class HealthChecker
     public function __construct(iterable $checkers = [])
     {
         foreach ($checkers as $checker) {
-            $this->addChecker($checker);
+            $this->registerChecker($checker);
         }
     }
 
-    public function addChecker(CheckerInterface $checker): self
+    public function registerChecker(CheckerInterface $checker): self
     {
         $this->checkers[$checker->getIdentifier()] = $checker;
 

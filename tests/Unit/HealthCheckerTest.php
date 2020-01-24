@@ -48,7 +48,7 @@ class HealthCheckerTest extends TestCase
     {
         $subject = new HealthChecker();
 
-        $subject->addChecker(
+        $subject->registerChecker(
             $this->buildChecker('successChecker', function () {
                 return new CheckerResult(true, 'success message');
             })
@@ -76,7 +76,7 @@ class HealthCheckerTest extends TestCase
     {
         $subject = new HealthChecker();
 
-        $subject->addChecker(
+        $subject->registerChecker(
             $this->buildChecker('failureChecker', function () {
                 return new CheckerResult(false, 'failure message');
             })
@@ -104,7 +104,7 @@ class HealthCheckerTest extends TestCase
     {
         $subject = new HealthChecker();
 
-        $subject->addChecker(
+        $subject->registerChecker(
             $this->buildChecker('failureChecker', function () {
                 throw new Exception('failure message');
             })
@@ -133,12 +133,12 @@ class HealthCheckerTest extends TestCase
         $subject = new HealthChecker();
 
         $subject
-            ->addChecker(
+            ->registerChecker(
                 $this->buildChecker('successChecker', function () {
                     return new CheckerResult(true, 'success message');
                 })
             )
-            ->addChecker(
+            ->registerChecker(
                 $this->buildChecker('failureChecker', function () {
                     throw new Exception('failure message');
                 })

@@ -17,9 +17,9 @@ $ composer require oat-sa/lib-health-check
 
 This library provides a [HealthChecker](src/HealthChecker.php) object in charge to aggregate and execute implementations of the [CheckerInterface](src/Checker/CheckerInterface.php).
 
-On the `HealthChecker` class `performChecks()` method execution, a [CheckerResultCollection](src/Result/CheckerResultCollection.php) instance is returned, to make available global checkers success and detailed messages for each of them.
+On the `HealthChecker` class `performChecks()` method execution, a [CheckerResultCollection](src/Result/CheckerResultCollection.php) instance is returned, aggregating all checkers results information.
 
-You need first to create a [CheckerInterface](src/Checker/CheckerInterface.php) as follow:
+By example, you need first to create [CheckerInterface](src/Checker/CheckerInterface.php) implementations as follow:
 
 ```php
 <?php declare(strict_types=1);
@@ -54,7 +54,7 @@ class MyFailureChecker implements CheckerInterface
 }
 ```
 
-And then add the created checker to the [HealthChecker](src/HealthChecker.php), and perform checks as follow:
+And then register the checkers into the [HealthChecker](src/HealthChecker.php), and perform checks as follow:
 
 ```php
 <?php declare(strict_types=1);
@@ -64,8 +64,8 @@ use OAT\Library\HealthCheck\HealthChecker;
 $healthChecker = new HealthChecker();
 
 $results = $healthChecker
-    ->addChecker(new MySuccessChecker())
-    ->addChecker(new MyFailureChecker())
+    ->registerChecker(new MySuccessChecker())
+    ->registerChecker(new MyFailureChecker())
     ->performChecks();
 
 $results->hasErrors(); // true
