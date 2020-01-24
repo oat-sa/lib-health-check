@@ -37,7 +37,7 @@ class HealthChecker
 
     public function addChecker(CheckerInterface $checker): self
     {
-        $this->checkers[] = $checker;
+        $this->checkers[$checker->getIdentifier()] = $checker;
 
         return $this;
     }
@@ -46,14 +46,14 @@ class HealthChecker
     {
         $collection = new CheckerResultCollection();
 
-        foreach ($this->checkers as $checker) {
+        foreach ($this->checkers as $identifier => $checker) {
             try {
                 $result = $checker->check();
             } catch (Throwable $exception) {
                 $result = new CheckerResult(false, $exception->getMessage());
             }
 
-            $collection->add($checker->getIdentifier(), $result);
+            $collection->add($identifier, $result);
         }
 
         return $collection;

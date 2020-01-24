@@ -64,7 +64,7 @@ class CheckerResultCollection implements IteratorAggregate, Countable, JsonSeria
         return [
             'success' => !$this->hasErrors(),
             'checkers' => array_map(
-                function (CheckerResult $result) {
+                function (CheckerResult $result): array {
                     return [
                         'success' => $result->isSuccess(),
                         'message' => $result->getMessage(),
