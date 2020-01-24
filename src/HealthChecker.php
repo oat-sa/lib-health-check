@@ -30,14 +30,14 @@ class HealthChecker
 
     public function __construct(iterable $checkers = [])
     {
-        foreach ($checkers as $checker) {
-            $this->registerChecker($checker);
+        foreach ($checkers as $index => $checker) {
+            $this->registerChecker($checker, is_string($index) ? $index : null);
         }
     }
 
-    public function registerChecker(CheckerInterface $checker): self
+    public function registerChecker(CheckerInterface $checker, string $identifier = null): self
     {
-        $this->checkers[$checker->getIdentifier()] = $checker;
+        $this->checkers[$identifier ?? $checker->getIdentifier()] = $checker;
 
         return $this;
     }

@@ -26,7 +26,7 @@ use PHPUnit\Framework\TestCase;
 
 class HealthCheckerTest extends TestCase
 {
-    public function testItCanBeConstructedWithCheckers(): void
+    public function testItCanBeConstructedWithPreRegisteredCheckers(): void
     {
         $subject = new HealthChecker(
             [
@@ -38,6 +38,41 @@ class HealthCheckerTest extends TestCase
                 })
             ]
         );
+
+        $results = $subject->performChecks();
+
+        $this->assertCount(2, $results);
+    }
+
+    public function testItCanBeConstructedWithTwiceTheSameCheckerUnderDifferentIdentifier(): void
+    {
+        $checker = $this->buildChecker('checker', function () {
+            return new CheckerResult();
+        });
+
+        $subject = new HealthChecker(
+            [
+                'checker1' => $checker,
+                'checker2' => $checker,
+            ]
+        );
+
+        $results = $subject->performChecks();
+
+        $this->assertCount(2, $results);
+    }
+
+    public function testItCanRegisterTwiceTheSameCheckerUnderDifferentIdentifier(): void
+    {
+        $checker = $this->buildChecker('checker', function () {
+            return new CheckerResult();
+        });
+
+        $subject = new HealthChecker();
+
+        $subject
+            ->registerChecker($checker, 'checker1')
+            ->registerChecker($checker, 'checker2');
 
         $results = $subject->performChecks();
 
