@@ -1,5 +1,12 @@
 # Health Check Library
 
+[![Latest Version](https://img.shields.io/github/tag/oat-sa/lib-health-check.svg?style=flat&label=release)](https://github.com/oat-sa/lib-health-check/tags)
+[![License GPL2](http://img.shields.io/badge/licence-GPL%202.0-blue.svg)](http://www.gnu.org/licenses/gpl-2.0.html)
+[![Build Status](https://travis-ci.org/oat-sa/lib-health-check.svg?branch=master)](https://travis-ci.org/oat-sa/lib-health-check)
+[![Coverage Status](https://coveralls.io/repos/github/oat-sa/lib-health-check/badge.svg?branch=master)](https://coveralls.io/github/oat-sa/lib-health-check?branch=master)
+[![Packagist Downloads](http://img.shields.io/packagist/dt/oat-sa/lib-health-check.svg)](https://packagist.org/packages/oat-sa/lib-health-check)
+
+
 > Health checks PHP library.
 
 ## Table of contents
