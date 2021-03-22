@@ -6,7 +6,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/oat-sa/lib-health-check/badge.svg?branch=master)](https://coveralls.io/github/oat-sa/lib-health-check?branch=master)
 [![Packagist Downloads](http://img.shields.io/packagist/dt/oat-sa/lib-health-check.svg)](https://packagist.org/packages/oat-sa/lib-health-check)
 
-
 > Health checks PHP library.
 
 ## Table of contents
