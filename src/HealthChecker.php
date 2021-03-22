@@ -67,9 +67,8 @@ class HealthChecker
                     $this->logger->error($result->getMessage());
                 }
             } catch (Throwable $exception) {
-                $message = $exception->getMessage();
-                $this->logger->error($message);
-                $result = new CheckerResult(false, $message);
+                $this->logger->error($exception->getMessage());
+                $result = new CheckerResult(false, $exception->getMessage());
             }
 
             $collection->add($identifier, $result);
