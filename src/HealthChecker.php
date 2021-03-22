@@ -25,6 +25,8 @@ namespace OAT\Library\HealthCheck;
 use OAT\Library\HealthCheck\Checker\CheckerInterface;
 use OAT\Library\HealthCheck\Result\CheckerResult;
 use OAT\Library\HealthCheck\Result\CheckerResultCollection;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 class HealthChecker
@@ -32,11 +34,16 @@ class HealthChecker
     /** @var CheckerInterface[] */
     private $checkers;
 
-    public function __construct(iterable $checkers = [])
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(iterable $checkers = [], ?LoggerInterface $logger = null)
     {
         foreach ($checkers as $index => $checker) {
             $this->registerChecker($checker, is_string($index) ? $index : null);
         }
+
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function registerChecker(CheckerInterface $checker, string $identifier = null): self
@@ -53,8 +60,16 @@ class HealthChecker
         foreach ($this->checkers as $identifier => $checker) {
             try {
                 $result = $checker->check();
+
+                if ($result->isSuccess()) {
+                    $this->logger->info($result->getMessage());
+                } else {
+                    $this->logger->error($result->getMessage());
+                }
             } catch (Throwable $exception) {
-                $result = new CheckerResult(false, $exception->getMessage());
+                $message = $exception->getMessage();
+                $this->logger->error($message);
+                $result = new CheckerResult(false, $message);
             }
 
             $collection->add($identifier, $result);
