@@ -61,7 +61,7 @@ class MyFailureChecker implements CheckerInterface
 }
 ```
 
-And then register the checkers into the [HealthChecker](src/HealthChecker.php), and perform checks as follow:
+Then register the checkers into the [HealthChecker](src/HealthChecker.php), and perform checks as follow:
 
 ```php
 <?php declare(strict_types=1);
