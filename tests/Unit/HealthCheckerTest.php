@@ -41,7 +41,7 @@ class HealthCheckerTest extends TestCase
                     return new CheckerResult(true, 'success message');
                 }),
                 $this->buildChecker('failureChecker', function () {
-                    throw new Exception('failure message');
+                    return new CheckerResult(false, 'failure message');
                 })
             ],
             $logger
@@ -50,8 +50,8 @@ class HealthCheckerTest extends TestCase
         $results = $subject->performChecks();
 
         $this->assertCount(2, $results);
-        $this->assertTrue($logger->hasInfo('success message'));
-        $this->assertTrue($logger->hasError('failure message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker successChecker success: success message'));
+        $this->assertTrue($logger->hasError('[health-check] checker failureChecker failure: failure message'));
     }
 
     public function testItCanBeConstructedWithTwiceTheSameCheckerUnderDifferentIdentifier(): void
@@ -74,7 +74,8 @@ class HealthCheckerTest extends TestCase
 
         $this->assertCount(2, $results);
 
-        $this->assertTrue($logger->hasInfo('success message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker checker1 success: success message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker checker2 success: success message'));
     }
 
     public function testItCanRegisterTwiceTheSameCheckerUnderDifferentIdentifier(): void
@@ -95,7 +96,8 @@ class HealthCheckerTest extends TestCase
 
         $this->assertCount(2, $results);
 
-        $this->assertTrue($logger->hasInfo('success message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker checker1 success: success message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker checker2 success: success message'));
     }
 
     public function testItPerformChecksWithSingleSuccessfulChecker(): void
@@ -127,7 +129,7 @@ class HealthCheckerTest extends TestCase
             $results->jsonSerialize()
         );
 
-        $this->assertTrue($logger->hasInfo('success message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker successChecker success: success message'));
     }
 
     public function testItPerformChecksWithSingleExpectedFailingChecker(): void
@@ -159,7 +161,7 @@ class HealthCheckerTest extends TestCase
             $results->jsonSerialize()
         );
 
-        $this->assertTrue($logger->hasError('failure message'));
+        $this->assertTrue($logger->hasError('[health-check] checker failureChecker failure: failure message'));
     }
 
     public function testItPerformChecksWithSingleUnexpectedFailingChecker(): void
@@ -170,7 +172,7 @@ class HealthCheckerTest extends TestCase
 
         $subject->registerChecker(
             $this->buildChecker('failureChecker', function () {
-                throw new Exception('failure message');
+                throw new Exception('exception message');
             })
         );
 
@@ -184,14 +186,14 @@ class HealthCheckerTest extends TestCase
                 'checkers' => [
                     'failureChecker' => [
                         'success' => false,
-                        'message' => 'failure message'
+                        'message' => 'exception message'
                     ]
                 ]
             ],
             $results->jsonSerialize()
         );
 
-        $this->assertTrue($logger->hasError('failure message'));
+        $this->assertTrue($logger->hasError('[health-check] checker failureChecker error: exception message'));
     }
 
     public function testItPerformChecksWithSeveralCheckers(): void
@@ -208,7 +210,7 @@ class HealthCheckerTest extends TestCase
             )
             ->registerChecker(
                 $this->buildChecker('failureChecker', function () {
-                    throw new Exception('failure message');
+                    throw new Exception('exception message');
                 })
             );
 
@@ -226,15 +228,15 @@ class HealthCheckerTest extends TestCase
                     ],
                     'failureChecker' => [
                         'success' => false,
-                        'message' => 'failure message'
+                        'message' => 'exception message'
                     ]
                 ]
             ],
             $results->jsonSerialize()
         );
 
-        $this->assertTrue($logger->hasInfo('success message'));
-        $this->assertTrue($logger->hasError('failure message'));
+        $this->assertTrue($logger->hasInfo('[health-check] checker successChecker success: success message'));
+        $this->assertTrue($logger->hasError('[health-check] checker failureChecker error: exception message'));
     }
 
     private function buildChecker(string $identifier, callable $checkerLogic): CheckerInterface

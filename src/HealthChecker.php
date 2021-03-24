@@ -61,13 +61,27 @@ class HealthChecker
             try {
                 $result = $checker->check();
 
+                $message = sprintf(
+                    '[health-check] checker %s %s: %s',
+                    $identifier,
+                    $result->isSuccess() ? 'success' : 'failure',
+                    $result->getMessage()
+                );
+
                 if ($result->isSuccess()) {
-                    $this->logger->info($result->getMessage());
+                    $this->logger->info($message);
                 } else {
-                    $this->logger->error($result->getMessage());
+                    $this->logger->error($message);
                 }
             } catch (Throwable $exception) {
-                $this->logger->error($exception->getMessage());
+                $this->logger->error(
+                    sprintf(
+                        '[health-check] checker %s error: %s',
+                        $identifier,
+                        $exception->getMessage()
+                    )
+                );
+
                 $result = new CheckerResult(false, $exception->getMessage());
             }
 
