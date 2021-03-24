@@ -57,7 +57,7 @@ class HealthChecker
     {
         $collection = new CheckerResultCollection();
 
-        foreach ($this->checkers as $identifier => $checker) {
+        foreach ($this->checkers ?? [] as $identifier => $checker) {
             try {
                 $result = $checker->check();
 
