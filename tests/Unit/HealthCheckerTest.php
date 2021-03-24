@@ -100,6 +100,25 @@ class HealthCheckerTest extends TestCase
         $this->assertTrue($logger->hasInfo('[health-check] checker checker2 success: success message'));
     }
 
+    public function testItPerformChecksWithNoCheckersRegistered(): void
+    {
+        $logger = new TestLogger();
+
+        $subject = new HealthChecker([], $logger);
+
+        $results = $subject->performChecks();
+
+        $this->assertCount(0, $results);
+        $this->assertFalse($results->hasErrors());
+        $this->assertEquals(
+            [
+                'success' => true,
+                'checkers' => []
+            ],
+            $results->jsonSerialize()
+        );
+    }
+
     public function testItPerformChecksWithSingleSuccessfulChecker(): void
     {
         $logger = new TestLogger();

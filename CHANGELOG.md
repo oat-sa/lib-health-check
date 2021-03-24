@@ -5,6 +5,7 @@ CHANGELOG
 -----
 
 * Added automatic logs on checkers execution
+* Fixed HealthChecker to allow processing without registered checkers  
 * Updated documentation
 
 1.0.0
