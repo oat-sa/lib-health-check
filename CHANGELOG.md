@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+1.1.0
+-----
+
+* Added automatic logs on checkers execution
+* Updated documentation
+
 1.0.0
 -----
 

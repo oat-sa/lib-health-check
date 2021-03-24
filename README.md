@@ -81,6 +81,10 @@ foreach ($results as $result) {
 }
 ```
 
+**Notes**:
+- you can provide to the `HealthChecker` (as 2nd constructor parameter) a [LoggerInterface](https://www.php-fig.org/psr/psr-3/#3-psrlogloggerinterface) instance to customise its logging behaviour.
+- by default, the `NullLogger` will be used
+
 ## Tests
 
 To run tests:
