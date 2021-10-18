@@ -67,25 +67,24 @@ class HealthChecker
                     $result->isSuccess() ? 'success' : 'failure',
                     $result->getMessage()
                 );
-
-                if ($result->isSuccess()) {
-                    $this->logger->info($message);
-                } else {
-                    $this->logger->error($message);
-                }
             } catch (Throwable $exception) {
-                $this->logger->error(
-                    sprintf(
-                        '[health-check] checker %s error: %s',
-                        $identifier,
-                        $exception->getMessage()
-                    )
+                $message = sprintf(
+                    '[health-check] checker %s error: %s',
+                    $identifier,
+                    $exception->getMessage()
                 );
 
-                $result = new CheckerResult(false, $exception->getMessage());
+                $result = CheckerResult::createFromThrowable($exception);
             }
 
             $collection->add($identifier, $result);
+
+            $context = $result->getContext();
+            if ($result->isSuccess()) {
+                $this->logger->info($message, $context);
+            } else {
+                $this->logger->error($message, $context);
+            }
         }
 
         return $collection;

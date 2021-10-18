@@ -22,6 +22,9 @@ declare(strict_types=1);
 
 namespace OAT\Library\HealthCheck\Result;
 
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Throwable;
+
 class CheckerResult
 {
     /** @var bool */
@@ -30,10 +33,22 @@ class CheckerResult
     /** @var ?string */
     private $message;
 
-    public function __construct(bool $success = true, string $message = null)
+    /** @var array */
+    private $context;
+
+    public function __construct(bool $success = true, string $message = null, array $context = [])
     {
         $this->success = $success;
         $this->message = $message;
+        $this->context = $context;
+    }
+
+    public static function createFromThrowable(Throwable $exception): self
+    {
+        return (new static())
+            ->setSuccess(false)
+            ->setMessage($exception->getMessage())
+            ->setContextFromThrowable($exception);
     }
 
     public function isSuccess(): bool
@@ -58,5 +73,29 @@ class CheckerResult
         $this->message = $message;
 
         return $this;
+    }
+
+    public function getContext(): array
+    {
+        return $this->context;
+    }
+
+    public function setContext(array $context): self
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    public function setContextFromThrowable(Throwable $exception): self
+    {
+        $flattenedException = FlattenException::createFromThrowable($exception);
+
+        return $this->setContext([
+            'class' => $flattenedException->getClass(),
+            'file'  => $flattenedException->getFile(),
+            'line'  => $flattenedException->getLine(),
+            'trace' => $flattenedException->getTrace(),
+        ]);
     }
 }
