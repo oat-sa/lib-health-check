@@ -23,10 +23,19 @@ declare(strict_types=1);
 namespace OAT\Library\HealthCheck\Checker;
 
 use OAT\Library\HealthCheck\Result\CheckerResult;
+use Throwable;
 
 interface CheckerInterface
 {
     public function getIdentifier(): string;
 
+    /**
+     * @return CheckerResult
+     *
+     * @throws Throwable
+     *
+     * Any unexpected exception should be bubbled up to the `OAT\Library\HealthCheck\HealthChecker` level.
+     * That would allow an appropriate exception logging.
+     */
     public function check(): CheckerResult;
 }

@@ -25,7 +25,7 @@ This library provides a [HealthChecker](src/HealthChecker.php) object in charge 
 
 On the `HealthChecker` class `performChecks()` method execution, a [CheckerResultCollection](src/Result/CheckerResultCollection.php) instance is returned, aggregating all checkers results information.
 
-By example, you need first to create [CheckerInterface](src/Checker/CheckerInterface.php) implementations as follow:
+For example, you need first to create [CheckerInterface](src/Checker/CheckerInterface.php) implementations as follows:
 
 ```php
 <?php declare(strict_types=1);
@@ -83,7 +83,8 @@ foreach ($results as $result) {
 
 **Notes**:
 - you can provide to the `HealthChecker` (as 2nd constructor parameter) a [LoggerInterface](https://www.php-fig.org/psr/psr-3/#3-psrlogloggerinterface) instance to customise its logging behaviour.
-- by default, the `NullLogger` will be used
+- by default, the `NullLogger` will be used.
+- it is recommended to catch only known exceptions in order to form an appropriate result message. The unknown exceptions and errors should be bubbled up to the `HealthCheker` level.
 
 ## Tests
 
