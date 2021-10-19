@@ -22,8 +22,10 @@ declare(strict_types=1);
 
 namespace OAT\Library\HealthCheck\Tests\Unit\Result;
 
+use Exception;
 use OAT\Library\HealthCheck\Result\CheckerResult;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 class CheckerResultTest extends TestCase
 {
@@ -33,6 +35,7 @@ class CheckerResultTest extends TestCase
 
         $this->assertTrue($subject->isSuccess());
         $this->assertNull($subject->getMessage());
+        $this->assertEmpty($subject->getContext());
     }
 
     public function testItCanSetAndGetSuccess(): void
@@ -46,10 +49,41 @@ class CheckerResultTest extends TestCase
 
     public function testItCanSetAndGetMessage(): void
     {
+        $message = 'test';
         $subject = new CheckerResult();
 
-        $subject->setMessage('test');
+        $subject->setMessage($message);
 
-        $this->assertEquals('test', $subject->getMessage());
+        $this->assertEquals($message, $subject->getMessage());
+    }
+
+    public function testItCanSetAndGetContext(): void
+    {
+        $context = ['test'];
+        $subject = new CheckerResult();
+
+        $subject->setContext($context);
+
+        $this->assertEquals($context, $subject->getContext());
+    }
+
+    public function testItCanSetContextFromExceptionAndGetContext(): void
+    {
+        $originalException = new Exception('original', 0);
+        $exception = new Exception('test', 0, $originalException);
+        $flattenedException = FlattenException::createFromThrowable($exception);
+
+        $expectedContext = [
+            'class' => $flattenedException->getClass(),
+            'file'  => $flattenedException->getFile(),
+            'line'  => $flattenedException->getLine(),
+            'trace' => $flattenedException->getTrace(),
+        ];
+
+        $subject = new CheckerResult();
+
+        $subject->setContextFromThrowable($exception);
+
+        $this->assertEquals($expectedContext, $subject->getContext());
     }
 }

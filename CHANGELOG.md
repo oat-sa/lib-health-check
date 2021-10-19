@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.2.0
+-----
+
+* Added unexpected health-checker exception trace logging
+
 1.1.0
 -----
 
