@@ -28,6 +28,8 @@ use OAT\Library\HealthCheck\HealthChecker;
 use OAT\Library\HealthCheck\Result\CheckerResult;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Throwable;
 
 class HealthCheckerTest extends TestCase
 {
@@ -187,13 +189,15 @@ class HealthCheckerTest extends TestCase
     {
         $logger = new TestLogger();
 
-        $subject = new HealthChecker([], $logger);
-
-        $subject->registerChecker(
-            $this->buildChecker('failureChecker', function () {
+        $failingChecker = $this->buildChecker(
+            'failureChecker',
+            function () {
                 throw new Exception('exception message');
-            })
+            }
         );
+
+        $subject = new HealthChecker([], $logger);
+        $subject->registerChecker($failingChecker);
 
         $results = $subject->performChecks();
 
@@ -212,12 +216,24 @@ class HealthCheckerTest extends TestCase
             $results->jsonSerialize()
         );
 
-        $this->assertTrue($logger->hasError('[health-check] checker failureChecker error: exception message'));
+        $this->assertTrue($logger->hasError(
+            $this->createRecord(
+                '[health-check] checker failureChecker error: exception message',
+                $failingChecker->getExceptionContext()
+            )
+        ));
     }
 
     public function testItPerformChecksWithSeveralCheckers(): void
     {
         $logger = new TestLogger();
+
+        $failingChecker = $this->buildChecker(
+            'failureChecker',
+            function () {
+                throw new Exception('exception message');
+            }
+        );
 
         $subject = new HealthChecker([], $logger);
 
@@ -227,11 +243,7 @@ class HealthCheckerTest extends TestCase
                     return new CheckerResult(true, 'success message');
                 })
             )
-            ->registerChecker(
-                $this->buildChecker('failureChecker', function () {
-                    throw new Exception('exception message');
-                })
-            );
+            ->registerChecker($failingChecker);
 
         $results = $subject->performChecks();
 
@@ -255,7 +267,12 @@ class HealthCheckerTest extends TestCase
         );
 
         $this->assertTrue($logger->hasInfo('[health-check] checker successChecker success: success message'));
-        $this->assertTrue($logger->hasError('[health-check] checker failureChecker error: exception message'));
+        $this->assertTrue($logger->hasError(
+            $this->createRecord(
+                '[health-check] checker failureChecker error: exception message',
+                $failingChecker->getExceptionContext()
+            )
+        ));
     }
 
     private function buildChecker(string $identifier, callable $checkerLogic): CheckerInterface
@@ -268,6 +285,9 @@ class HealthCheckerTest extends TestCase
             /** @var callable */
             private $checkerLogic;
 
+            /** @var ?Throwable */
+            private $exception;
+
             public function __construct(string $identifier, callable $checkerLogic)
             {
                 $this->identifier = $identifier;
@@ -279,10 +299,33 @@ class HealthCheckerTest extends TestCase
                 return $this->identifier;
             }
 
+            public function getExceptionContext(): array
+            {
+                $flattenedException = FlattenException::createFromThrowable($this->exception);
+
+                return [
+                    'class' => $flattenedException->getClass(),
+                    'file'  => $flattenedException->getFile(),
+                    'line'  => $flattenedException->getLine(),
+                    'trace' => $flattenedException->getTrace(),
+                ];
+            }
+
             public function check(): CheckerResult
             {
-                return call_user_func($this->checkerLogic);
+                try {
+                    return call_user_func($this->checkerLogic);
+                } catch (Throwable $exception) {
+                    $this->exception = $exception;
+
+                    throw $this->exception;
+                }
             }
         };
+    }
+
+    private function createRecord(string $message, array $context = []): array
+    {
+        return compact('message', 'context');
     }
 }
