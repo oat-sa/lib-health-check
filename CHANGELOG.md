@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+2.0.0
+-----
+
+* Remove Coveralls
+* Update dependencies
+ 
 1.2.0
 -----
 
