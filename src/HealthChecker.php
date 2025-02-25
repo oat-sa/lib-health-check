@@ -46,7 +46,7 @@ class HealthChecker
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public function registerChecker(CheckerInterface $checker, string $identifier = null): self
+    public function registerChecker(CheckerInterface $checker, ?string $identifier = null): self
     {
         $this->checkers[$identifier ?? $checker->getIdentifier()] = $checker;
 
