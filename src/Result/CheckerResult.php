@@ -36,7 +36,7 @@ class CheckerResult
     /** @var array */
     private $context;
 
-    public function __construct(bool $success = true, string $message = null, array $context = [])
+    public function __construct(bool $success = true, ?string $message = null, array $context = [])
     {
         $this->success = $success;
         $this->message = $message;
