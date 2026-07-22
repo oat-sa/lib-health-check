@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+Unreleased
+----------
+
+* Allow Symfony 7 (`symfony/error-handler` ^6.0 || ^7.0)
+
 2.0.0
 -----
 
